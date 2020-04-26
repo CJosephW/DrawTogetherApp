@@ -16,6 +16,9 @@ var ws = new WebSocket('ws://localhost:40510')
 $('#blue').on('click', function(event){
     color = '#3636e7'
 });
+$('#black').on('click', function(event){
+    color = 'black'
+});
 
 
 const rect = canvas.getBoundingClientRect();
