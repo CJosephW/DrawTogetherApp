@@ -16,20 +16,21 @@ $('#blue').on('click', function(event){
     color = "#FF0000"
 });
 
-ws.onmessage = function (message){
+
+const rect = canvas.getBoundingClientRect();
+
+ws.onmessage = function (msg){
+    let message = JSON.parse(msg.data)
+    console.log(message);
     if(message[0].x1 != null){
-        for(Mstroke of message){
-            context.beginPath();
-            context.strokeStyle = color;
-            context.lineWidth = 2;
-            context.moveTo(Mstroke.x1, Mstroke.y1);
-            context.lineTo(Mstroke.x2, Mstroke.y2);
-            context.stroke();
-            context.closePath();
+
+        console.log(message[0].x1);
+        for(i = 0; i < message.length; i++){
+            console.log(message[i].x1+ "hello")
+            drawLine(context, message[i].x1, message[i].y1, message[i].x2, message[i].y2);
         }
     }
 }
-const rect = canvas.getBoundingClientRect();
 
 canvas.addEventListener('mousedown', e => {
     x = e.clientX - rect.left;
@@ -51,7 +52,7 @@ canvas.addEventListener('mouseup', e => {
         for(item of strokesArray){
             console.log(item.x1);
         }
-        ws.send(strokesArray);
+        ws.send(JSON.stringify(strokesArray));
         strokesArray = [];
         x = 0;
         y = 0; 
