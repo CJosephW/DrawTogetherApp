@@ -69,9 +69,9 @@ function drawLine(context, x1, y1, x2, y2){
     context.lineTo(x2, y2);
     strokesArray.push({
         x1:x1,
-        y1:x1,
+        y1:y1,
         x2:x2,
-        y2:x2,
+        y2:y2,
     })
     context.stroke();
     context.closePath();
