@@ -26,6 +26,13 @@ $('#green').on('click', function(event){
     color = 'green'
 });
 
+$(document).click(function(e) {
+    var target = $(e.target);
+
+    if( !target.is("#draw-canvas") && target.closest("#draw-canvas").length === 0 ) {
+        Drawing = false;
+    }
+});
 
 const rect = canvas.getBoundingClientRect();
 

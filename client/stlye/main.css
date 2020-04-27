@@ -6,13 +6,22 @@ h1{
 }
 
 #background{
-    background-color: whitesmoke;
-    align-items: center;
+    background-image: url("/images/background.png");
+    background-repeat: repeat;    
+}
+#main-header{
+    color: white;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+    margin:auto;
+    padding: 10px;
+    width:15%;
+
 }
 canvas{
     display: block;
     margin: auto;
     margin-top: 25px;
+    background-color: white;
 }
 .container{
     display: flex;
