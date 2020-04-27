@@ -14,16 +14,17 @@ const WebSocketServer = require('ws').Server,
 
 wss.on('connection', function(ws) {
     CLIENTS.push(ws);
-    ws.on('message', function (message) {
+    ws.on('message', function (message, sender) {
         let msg = JSON.parse(message);//this is correct do not touch
-
-        sendAll(JSON.stringify(msg));
+        sendAll(JSON.stringify(msg), ws);
     })
 
 
 })
-function sendAll (message) {
+function sendAll (message, sender) {
     for (var i=0; i<CLIENTS.length; i++) {
-        CLIENTS[i].send(message);
+        if(CLIENTS[i] !== sender){
+            CLIENTS[i].send(message);
+        }
     }
 }
