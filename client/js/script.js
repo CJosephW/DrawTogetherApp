@@ -19,6 +19,12 @@ $('#blue').on('click', function(event){
 $('#black').on('click', function(event){
     color = 'black'
 });
+$('#red').on('click', function(event){
+    color = 'red'
+});
+$('#green').on('click', function(event){
+    color = 'green'
+});
 
 
 const rect = canvas.getBoundingClientRect();
