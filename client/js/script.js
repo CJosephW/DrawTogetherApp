@@ -4,8 +4,6 @@ let y = 0;
 let color = 'black'
 
 const canvas = document.getElementById("draw-canvas");
-const blueBrush = document.getElementById("blue");
-const blackBrush = document.getElementById("black");
 const context = canvas.getContext('2d');
 
 let strokesArray = {};
@@ -37,13 +35,23 @@ $(document).click(function(e) {
 const rect = canvas.getBoundingClientRect();
 
 ws.onmessage = function (msg){
-    let message = JSON.parse(msg.data)
-    console.log(message);
-    if(message.events[0].x1 != null){
-
-        for(i = 0; i < message.events.length; i++){
-            console.log(message.events[i].x1+ "hello")
-            drawLine(context, message.events[i].x1, message.events[i].y1, message.events[i].x2, message.events[i].y2, message.color);
+    let messages = JSON.parse(msg.data)
+    console.log(messages);
+    
+    
+    if(messages.type === "catchup"){
+        for(message of messages.all_draw_events){
+            console.log(message)
+            for(i = 0; i < message.events.length; i++){
+                console.log(message.events[i].x1+ "hello")
+                drawLine(context, message.events[i].x1, message.events[i].y1, message.events[i].x2, message.events[i].y2, message.color);
+                }
+            }
+        }
+    if(messages.type === "drawing"){
+        for(message of messages.draw_event.events){
+            console.log(message+ "hello")
+            drawLine(context, message.x1, message.y1, message.x2, message.y2, messages.draw_event.color);
         }
     }
 }
@@ -68,9 +76,6 @@ canvas.addEventListener('mousemove', e => {
 canvas.addEventListener('mouseup', e => {
     if(Drawing === true){
         drawLine(context, x, y, e.clientX - rect.left, e.clientY - rect.top, color);
-        for(item of strokesArray.events){
-            console.log(item.x1);
-        }
         ws.send(JSON.stringify(strokesArray));
         strokesArray.events = [];
         strokesArray.color = ""
