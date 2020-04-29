@@ -8,6 +8,7 @@ const context = canvas.getContext('2d');
 const chatBox = document.getElementById("chat-list");
 let strokesArray = {};
 strokesArray.type = "drawing";
+let username = ""
 
 var ws = new WebSocket('ws://localhost:40510')
 
@@ -35,12 +36,18 @@ $('#chat-form').submit(function() {
     var chatValue = ($('#chat-input').val());
     console.log(chatValue);
     ws.send(JSON.stringify({
+        user: username,
         type: "chat",
         chat_message: chatValue
     }));
+    document.getElementById('chat-input').value = '';
     return false;
 });
-
+$('#username-form').submit(function(){
+    username = ($('#username-input').val());
+    console.log(username);
+    return false;
+})
 
 
 
@@ -60,17 +67,20 @@ ws.onmessage = function (msg){
                 drawLine(context, message.events[i].x1, message.events[i].y1, message.events[i].x2, message.events[i].y2, message.color);
                 }
             }
-        }
-    if(messages.type === "drawing"){
+    } else if(messages.type === "drawing"){
         for(message of messages.draw_event.events){
             console.log(message+ "hello")
             drawLine(context, message.x1, message.y1, message.x2, message.y2, messages.draw_event.color);
         }
     } else if (messages.type === "chat"){
-        let chatP = document.createElement("p");
+        chatBox.insertAdjacentHTML("beforeend", "<div class = 'message'> <div class = 'user'>"+ messages.username+":</div> <div class = 'message'><p>" +messages.chat_message+ "</p></div></div>");
+    } else if (messages.type = "chat_logs"){
+        for(chat of messages.chat_logs){
+            chatBox.insertAdjacentHTML("beforeend", "<div class = 'message'> <div class = 'user'>"+ chat.user+":</div> <div class = 'message'><p>" +chat.chat_message+ "</p></div></div>");
+        }
 
-        chatBox.insertAdjacentHTML("beforeend", "<div class = 'message'> <div class = 'user'>Username: </div> <div class = 'message'><p>" +messages.chat_message+ "</p></div></div>");
     }
+
 }
 
 canvas.addEventListener('mousedown', e => {

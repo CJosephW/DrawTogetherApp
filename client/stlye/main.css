@@ -48,6 +48,7 @@ canvas{
     height: 500px;
     scroll-behavior: smooth;
     overflow-y: scroll;
+    background-color: #e8eded;
 }
 #chat-container{
     display: flex;

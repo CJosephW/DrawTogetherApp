@@ -2,6 +2,7 @@ var express = require('express')
 var app = express()
 
 let canvasStrokes = [];
+let chatLogs = [];
 app.use('/', express.static(__dirname + '/client'));
 
 
@@ -21,24 +22,31 @@ wss.on('connection', function(ws) {
         type: "catchup",
         all_draw_events: canvasStrokes
     }));
+    ws.send(JSON.stringify({
+        type: "chat_logs",
+        chat_logs: chatLogs
+
+    }))
     console.log(canvasStrokes);
     ws.on('message', function (message, sender) {
         
         let msg = JSON.parse(message);//this is correct do not touch
 
         console.log(msg);
-        canvasStrokes.push(msg);
         
 
         if (msg.type === "drawing"){
+            canvasStrokes.push(msg);
             sendAllButSender(JSON.stringify({
                 type: "drawing",
                 draw_event: msg
             }), ws);//sends to all excluding sender 
         } 
         else if (msg.type === "chat"){
+            chatLogs.push(msg);
             console.log("chat recieved");
             sendAll(JSON.stringify({
+                username: msg.user,
                 type: "chat",
                 chat_message: msg.chat_message
             }))
