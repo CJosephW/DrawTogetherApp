@@ -22,15 +22,32 @@
     <body id = "background">
         
         <h1 id = 'main-header'>DrawTogether!</h1>
+        <div class = "container" id = "canvas-chat"> 
+            <div id = 'canvas-colors'>
+                <canvas id = "draw-canvas" width ="1200" height=  "600" style="border: 2px solid black;"></canvas>
+                <div class = 'container' id = 'colors'>
+                    <button id = 'blue' type = 'button' class = 'btn btn-primary'></button>
+                    <button id = 'black' type="button" class="btn btn-dark"></button>
+                    <button id = 'red' type = 'button' class = 'btn'></button>
+                    <button id = 'green' type="button" class="btn"></button>
+                </div>
+            </div>
+            <div class = "container" id = "chat-container">
+                <div id = 'chat-box'>
+                    <ul class = 'list' id = 'chat-list'>
 
-        <canvas id = "draw-canvas" width ="1200" height=  "600" style="border: 2px solid black;"></canvas>
-        
-        <div class = 'container'>
-            <button id = 'blue' type = 'button' class = 'btn btn-primary'></button>
-            <button id = 'black' type="button" class="btn btn-dark"></button>
-            <button id = 'red' type = 'button' class = 'btn'></button>
-            <button id = 'green' type="button" class="btn"></button>
+                    </ul>
+                </div>
+                <form id = "chat-form">
+                    <label for = "chat">Chat!:</label>
+                    <input type = 'text' id = "chat-input">
+                    <input type = "submit" value = "Send!">
+                </form>
+            </div>   
+            
         </div>
+       
+       
         
         <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>

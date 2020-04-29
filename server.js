@@ -30,18 +30,33 @@ wss.on('connection', function(ws) {
         canvasStrokes.push(msg);
         
 
-        sendAll(JSON.stringify({
-            type: "drawing",
-            draw_event: msg
-        }), ws);//sends to all excluding sender 
+        if (msg.type === "drawing"){
+            sendAllButSender(JSON.stringify({
+                type: "drawing",
+                draw_event: msg
+            }), ws);//sends to all excluding sender 
+        } 
+        else if (msg.type === "chat"){
+            console.log("chat recieved");
+            sendAll(JSON.stringify({
+                type: "chat",
+                chat_message: msg.chat_message
+            }))
+        } 
+  
     })
 
 
 })
-function sendAll (message, sender) {
+function sendAllButSender (message, sender) {
     for (var i=0; i<CLIENTS.length; i++) {
         if(CLIENTS[i] !== sender){
             CLIENTS[i].send(message);
         }
+    }
+}
+function sendAll (message) {
+    for (var i=0; i<CLIENTS.length; i++) {
+        CLIENTS[i].send(message);
     }
 }

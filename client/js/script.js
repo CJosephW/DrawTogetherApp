@@ -5,9 +5,9 @@ let color = 'black'
 
 const canvas = document.getElementById("draw-canvas");
 const context = canvas.getContext('2d');
-
+const chatBox = document.getElementById("chat-list");
 let strokesArray = {};
-
+strokesArray.type = "drawing";
 
 var ws = new WebSocket('ws://localhost:40510')
 
@@ -31,6 +31,19 @@ $(document).click(function(e) {
         Drawing = false;
     }
 });
+$('#chat-form').submit(function() { 
+    var chatValue = ($('#chat-input').val());
+    console.log(chatValue);
+    ws.send(JSON.stringify({
+        type: "chat",
+        chat_message: chatValue
+    }));
+    return false;
+});
+
+
+
+
 
 const rect = canvas.getBoundingClientRect();
 
@@ -53,6 +66,10 @@ ws.onmessage = function (msg){
             console.log(message+ "hello")
             drawLine(context, message.x1, message.y1, message.x2, message.y2, messages.draw_event.color);
         }
+    } else if (messages.type === "chat"){
+        let chatP = document.createElement("p");
+
+        chatBox.insertAdjacentHTML("beforeend", "<div class = 'message'> <div class = 'user'>Username: </div> <div class = 'message'><p>" +messages.chat_message+ "</p></div></div>");
     }
 }
 

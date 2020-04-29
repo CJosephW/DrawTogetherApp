@@ -28,6 +28,8 @@ canvas{
     display: flex;
     align-content: center;
     justify-content: center;
+    padding-top: 10px;
+
 }
 #green{
     background-color: green;
@@ -36,4 +38,23 @@ canvas{
 #red{
     background-color: red;
     color:white;
+}
+
+#colors{
+    padding-top: 0px;
+}
+#chat-box{
+    display: flex;
+    height: 500px;
+    scroll-behavior: smooth;
+    overflow-y: scroll;
+}
+#chat-container{
+    display: flex;
+    flex-direction: column;
+
+}
+#chat-list{
+    width: 100%;
+    padding: 0px;
 }
