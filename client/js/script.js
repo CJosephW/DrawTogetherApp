@@ -35,13 +35,15 @@ $(document).click(function(e) {
 $('#chat-form').submit(function() { 
     var chatValue = ($('#chat-input').val());
     console.log(chatValue);
-    ws.send(JSON.stringify({
-        user: username,
-        type: "chat",
-        chat_message: chatValue
-    }));
-    document.getElementById('chat-input').value = '';
-    return false;
+    if(chatValue != ""){
+        ws.send(JSON.stringify({
+            user: username,
+            type: "chat",
+            chat_message: chatValue
+        }));
+        document.getElementById('chat-input').value = '';
+    }
+    return false;    
 });
 $('#username-form').submit(function(){
     username = ($('#username-input').val());
