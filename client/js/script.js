@@ -40,11 +40,12 @@ $('#chat-form').submit(function() { //sends chat to server
         ws.send(JSON.stringify({
             user: username,
             type: "chat",
-            chat_message: chatValue
+            chat_message: chatValue,
+            session_id: session_id
         }));
         document.getElementById('chat-input').value = '';
     }
-    return false;    
+    return false;//return false or else it attempts to reload the client    
 });
 
 $('#username-form').submit(function(){//sets username
@@ -52,25 +53,23 @@ $('#username-form').submit(function(){//sets username
     return false;//return false or else it attempts to reload the client
 })
 
-
-
-
 const rect = canvas.getBoundingClientRect();
-ws.onopen = function(){
+
+ws.onopen = function(){//on connect tell server to initialize the session with the current ID
+    
     url = window.location.href
     id = url.split('/')[4];
-    console.log(id);
     session_id = id;
+
     ws.send(JSON.stringify({
         type: 'initialize_client',
         session_id: id
     }));
 }
+
 ws.onmessage = function (msg){
     let messages = JSON.parse(msg.data)
-    console.log(messages);
-    
-    
+        
     if(messages.type === "catchup"){//getting previous drawing events
         console.log(msg)
         for(message of messages.all_draw_events){
@@ -84,8 +83,10 @@ ws.onmessage = function (msg){
             console.log(message+ "hello")
             drawLine(context, message.x1, message.y1, message.x2, message.y2, messages.draw_event.color);
         }
+        
     } else if (messages.type === "chat"){//new chats
         chatBox.insertAdjacentHTML("beforeend", "<div class = 'message'> <div class = 'user'>"+ messages.username+":</div> <div class = 'message'><p>" +messages.chat_message+ "</p></div></div>");
+    
     } else if (messages.type = "chat_logs"){//getting chat logs
         for(chat of messages.chat_logs){
             chatBox.insertAdjacentHTML("beforeend", "<div class = 'message'> <div class = 'user'>"+ chat.user+":</div> <div class = 'message'><p>" +chat.chat_message+ "</p></div></div>");
@@ -121,7 +122,6 @@ canvas.addEventListener('mouseup', e => {//stop drawing and clear the events and
         x = 0;
         y = 0; 
         Drawing = false;
-
     }
 });
 
@@ -139,7 +139,6 @@ function drawLine(context, x1, y1, x2, y2, drawcolor){//strokes and sending them
             y2:y2,
         })
     }
-
     context.stroke();
     context.closePath();
 }
