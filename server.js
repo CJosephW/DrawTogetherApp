@@ -41,20 +41,24 @@ wss.on('connection', function(ws){
                 }
             }
             ws.send(JSON.stringify({
-                type: "catchup",
+                type: "catchup",//sending all strokes
                 all_draw_events: SESSIONS[msg.session_id].strokes
             }));
             ws.send(JSON.stringify({
-                type: "chat_logs",
+                type: "chat_logs",//sending chat logs on connect
                 chat_logs: SESSIONS[msg.session_id].chat_messages
             }))
         }
-        else if (msg.type == "drawing"){
+        else if (msg.type == "drawing"){//on drawing push to 
             SESSIONS[msg.session_id].strokes.push({
                 events: msg.events,
                 color: msg.color,
-
             });
+            sendAllButSender(JSON.stringify({
+                type: "drawing",
+                draw_event: msg
+                
+            }), ws);
         }
         else if(msg.type = 'chat'){
             SESSIONS[msg.session_id].chat_messages.push({
