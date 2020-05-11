@@ -12,4 +12,4 @@ and finally
 To start the program simply run:
 ```npm start```
 and make your way to localhost:3000 in your preferred browser
-![](https://imgur.com/a/mlLcBuL)
+![](https://giphy.com/gifs/Keh948wlMHPPPYzudE/giphy.gif)
