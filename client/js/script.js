@@ -4,10 +4,14 @@ let y = 0;
 let color = 'black'
 
 const canvas = document.getElementById("draw-canvas");
+const width = canvas.width;
+const height = canvas.height;
+/*for (i = 0; i > )*/
 const context = canvas.getContext('2d');
 const chatBox = document.getElementById("chat-list");
 let username = ($('#username-input').val());
 let strokesArray = {};
+let cursorSquare = [];
 strokesArray.type = "drawing";
 session_id = '';
 
@@ -106,11 +110,17 @@ canvas.addEventListener('mousedown', e => {//on mouse down start a new events ar
 });
 
 canvas.addEventListener('mousemove', e => {//get x and y values everytime the client moves
-    if(Drawing === true) {
+    /*if(Drawing === true) {
         drawLine(context, x, y, e.clientX - rect.left, e.clientY - rect.top, color);
         x = e.clientX - rect.left;
         y = e.clientY - rect.top;
+    }*/
+    if(cursorSquare.length > 0){
+        context.clearRect(cursorSquare[0], cursorSquare[1], '10', '10')
+        cursorSquare = [];
     }
+    
+    drawSquare(context, e.clientX-rect.left, e.clientY - rect.top, color)
 });
 
 canvas.addEventListener('mouseup', e => {//stop drawing and clear the events and color
@@ -141,4 +151,11 @@ function drawLine(context, x1, y1, x2, y2, drawcolor){//strokes and sending them
     }
     context.stroke();
     context.closePath();
+}
+function drawSquare(context, x1, y1, drawcolor){
+    
+    context.beginPath();
+    context.strokeStyle = drawcolor;
+    context.fillRect(Math.round(x1), Math.round(y1),5,5);
+    cursorSquare.push(x1, y1)
 }

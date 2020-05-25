@@ -17,7 +17,7 @@ app.get('/', function(req, res) {
 
 app.get('/draw/:id', function(req, res) {
     res.sendFile(__dirname + '/client/app.html');//serve our html
-}); // Server for ids
+}); 
 
 app.listen(3000, function(){
     console.log('app listening at port 3000');
