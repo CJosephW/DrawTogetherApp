@@ -154,8 +154,7 @@ function drawLine(context, x1, y1, x2, y2, drawcolor){//strokes and sending them
 }
 function drawSquare(context, x1, y1, drawcolor){
     
-    context.beginPath();
     context.strokeStyle = drawcolor;
-    context.fillRect(Math.round(x1), Math.round(y1),5,5);
-    cursorSquare.push(x1, y1)
+    context.fillRect(Math.round(x1/5)*5, Math.round(y1/5)*5,5,5);
+    cursorSquare.push(Math.round(x1/5)*5, Math.round(y1/5)*5)
 }
