@@ -1,19 +1,38 @@
 let Drawing = false;
 let x = 0;
 let y = 0;
-let color = 'black'
-
+let drawcolor = 'black'
 const canvas = document.getElementById("draw-canvas");
-const width = canvas.width;
-const height = canvas.height;
-/*for (i = 0; i > )*/
 const context = canvas.getContext('2d');
+
 const chatBox = document.getElementById("chat-list");
 let username = ($('#username-input').val());
 let strokesArray = {};
 let cursorSquare = [];
 strokesArray.type = "drawing";
 session_id = '';
+
+window.onload = init;
+
+function init(){
+
+
+    window.requestAnimationFrame(gameLoop);
+}
+
+function gameLoop(timestamp){
+    draw();
+    window.requestAnimationFrame(gameLoop);
+    
+}
+function draw(){
+    for(item of layer_one){            
+        drawSquare(context, item.x1, item.y1, drawcolor)
+    }
+    drawSquare(context, cursorSquare[0], cursorSquare[1], drawcolor)
+}
+
+layer_one = [];
 
 var ws = new WebSocket('ws://localhost:40510')
 
@@ -100,39 +119,51 @@ ws.onmessage = function (msg){
 
 }
 
+
 canvas.addEventListener('mousedown', e => {//on mouse down start a new events array and begin drawing
-    strokesArray.events = [];
+    /*strokesArray.events = [];
     strokesArray.session_id = session_id;
     strokesArray.color = color;
     x = e.clientX - rect.left;
     y = e.clientY - rect.top;
+    Drawing = true;*/
+
+    layer_one.push({
+        x1: Math.round((e.clientX - rect.left)/5) *5,
+        y1: Math.round((e.clientY - rect.top)/5)*5
+    })
     Drawing = true;
+
+
+
 });
 
 canvas.addEventListener('mousemove', e => {//get x and y values everytime the client moves
-    /*if(Drawing === true) {
-        drawLine(context, x, y, e.clientX - rect.left, e.clientY - rect.top, color);
-        x = e.clientX - rect.left;
-        y = e.clientY - rect.top;
-    }*/
-    if(cursorSquare.length > 0){
-        context.clearRect(cursorSquare[0], cursorSquare[1], '10', '10')
-        cursorSquare = [];
-    }
     
-    drawSquare(context, e.clientX-rect.left, e.clientY - rect.top, color)
+    if(Drawing === true) {
+        layer_one.push({
+            x1: Math.round((e.clientX - rect.left)/5) *5,
+            y1: Math.round((e.clientY - rect.top)/5)*5
+        })
+    }
+    context.clearRect(cursorSquare[0], cursorSquare[1], 5, 5);
+    cursorSquare = [];
+
+    cursorSquare.push(Math.round((e.clientX - rect.left)/5)*5, Math.round((e.clientY - rect.top)/5)*5);
+
 });
 
 canvas.addEventListener('mouseup', e => {//stop drawing and clear the events and color
-    if(Drawing === true){
+    /*if(Drawing === true){
         drawLine(context, x, y, e.clientX - rect.left, e.clientY - rect.top, color);
         ws.send(JSON.stringify(strokesArray));
         strokesArray.events = [];
         strokesArray.color = ""
         x = 0;
         y = 0; 
-        Drawing = false;
-    }
+        
+    }*/
+    Drawing = false;
 });
 
 function drawLine(context, x1, y1, x2, y2, drawcolor){//strokes and sending them to the events 
@@ -156,5 +187,4 @@ function drawSquare(context, x1, y1, drawcolor){
     
     context.strokeStyle = drawcolor;
     context.fillRect(Math.round(x1/5)*5, Math.round(y1/5)*5,5,5);
-    cursorSquare.push(Math.round(x1/5)*5, Math.round(y1/5)*5)
 }
