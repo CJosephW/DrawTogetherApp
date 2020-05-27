@@ -27,9 +27,11 @@ function gameLoop(timestamp){
 }
 function draw(){
     for(item of layer_one){            
-        drawSquare(context, item.x1, item.y1, drawcolor)
+        
+        drawSquare(context, item.x1, item.y1, item.color)
+
     }
-    drawSquare(context, cursorSquare[0], cursorSquare[1], drawcolor)
+    drawSquare(context, cursorSquare[0], cursorSquare[1], cursorSquare[2])
 }
 
 layer_one = [];
@@ -37,16 +39,16 @@ layer_one = [];
 var ws = new WebSocket('ws://localhost:40510')
 
 $('#blue').on('click', function(event){//button functions for different colors
-    color = '#3636e7'
+    drawcolor = '#3636e7'
 });
 $('#black').on('click', function(event){
-    color = 'black'
+    drawcolor = 'black'
 });
 $('#red').on('click', function(event){
-    color = 'red'
+    drawcolor = 'red'
 });
 $('#green').on('click', function(event){
-    color = 'green'
+    drawcolor = 'green'
 });
 
 $(document).click(function(e) {// will not continue drawing if off the canvas
@@ -130,7 +132,8 @@ canvas.addEventListener('mousedown', e => {//on mouse down start a new events ar
 
     layer_one.push({
         x1: Math.round((e.clientX - rect.left)/5) *5,
-        y1: Math.round((e.clientY - rect.top)/5)*5
+        y1: Math.round((e.clientY - rect.top)/5)*5,
+        color: drawcolor
     })
     Drawing = true;
 
@@ -143,13 +146,14 @@ canvas.addEventListener('mousemove', e => {//get x and y values everytime the cl
     if(Drawing === true) {
         layer_one.push({
             x1: Math.round((e.clientX - rect.left)/5) *5,
-            y1: Math.round((e.clientY - rect.top)/5)*5
+            y1: Math.round((e.clientY - rect.top)/5)*5,
+            color: drawcolor
         })
     }
     context.clearRect(cursorSquare[0], cursorSquare[1], 5, 5);
     cursorSquare = [];
 
-    cursorSquare.push(Math.round((e.clientX - rect.left)/5)*5, Math.round((e.clientY - rect.top)/5)*5);
+    cursorSquare.push(Math.round((e.clientX - rect.left)/5)*5, Math.round((e.clientY - rect.top)/5)*5 ,drawcolor);
 
 });
 
@@ -163,6 +167,11 @@ canvas.addEventListener('mouseup', e => {//stop drawing and clear the events and
         y = 0; 
         
     }*/
+    
+    layer_one.push({
+        x1: Math.round((e.clientX - rect.left)/5) *5,
+        y1: Math.round((e.clientY - rect.top)/5)*5
+    })
     Drawing = false;
 });
 
@@ -185,6 +194,6 @@ function drawLine(context, x1, y1, x2, y2, drawcolor){//strokes and sending them
 }
 function drawSquare(context, x1, y1, drawcolor){
     
-    context.strokeStyle = drawcolor;
+    context.fillStyle = drawcolor;
     context.fillRect(Math.round(x1/5)*5, Math.round(y1/5)*5,5,5);
 }

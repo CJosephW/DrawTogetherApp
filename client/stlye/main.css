@@ -22,7 +22,7 @@ canvas{
     margin: auto;
     margin-top: 25px;
     background-color: white;
-    cursor: url('/images/pen.png') 1 16, auto;
+    cursor: url('/images/pen.png') 1 10, auto;
 }
 .container{
     display: flex;
