@@ -11,7 +11,7 @@ let strokesArray = {};
 let cursorSquare = [];
 strokesArray.type = "drawing";
 session_id = '';
-
+let tool = "pencil";
 window.onload = init;
 
 function init(){
@@ -49,6 +49,12 @@ $('#red').on('click', function(event){
 });
 $('#green').on('click', function(event){
     drawcolor = 'green'
+});
+$('#pencil').on('click', function(event){
+    tool = "pencil"
+});
+$('#eraser').on('click', function(event){
+    tool = "eraser"
 });
 
 $(document).click(function(e) {// will not continue drawing if off the canvas
@@ -129,27 +135,55 @@ canvas.addEventListener('mousedown', e => {//on mouse down start a new events ar
     x = e.clientX - rect.left;
     y = e.clientY - rect.top;
     Drawing = true;*/
-
-    layer_one.push({
-        x1: Math.round((e.clientX - rect.left)/5) *5,
-        y1: Math.round((e.clientY - rect.top)/5)*5,
-        color: drawcolor
-    })
-    Drawing = true;
-
-
-
-});
-
-canvas.addEventListener('mousemove', e => {//get x and y values everytime the client moves
-    
-    if(Drawing === true) {
+    if(tool === "pencil"){
         layer_one.push({
             x1: Math.round((e.clientX - rect.left)/5) *5,
             y1: Math.round((e.clientY - rect.top)/5)*5,
             color: drawcolor
         })
     }
+    else if(tool === "eraser"){
+        for(i = 0; i < layer_one.length; i++){
+            if(Math.round((e.clientX - rect.left)/5)*5 === layer_one[i].x1 && Math.round((e.clientY - rect.top)/5)*5 === layer_one[i].y1){
+                console.log('match1');
+                cleaned_array = layer_one.splice(i, 1);
+                layer_one = cleaned_array;
+                context.clearRect(cursorSquare[0], cursorSquare[1], 5, 5);
+            }
+        }
+    }
+    
+
+    Drawing = true;
+
+});
+
+canvas.addEventListener('mousemove', e => {//get x and y values everytime the client moves
+    
+    if(Drawing == true) {
+        
+        if(tool === "pencil"){
+            
+            layer_one.push({
+                x1: Math.round((e.clientX - rect.left)/5) *5,
+                y1: Math.round((e.clientY - rect.top)/5)*5,
+                color: drawcolor
+            });
+        } else if(tool === "eraser"){
+            for(i = 0; i < layer_one.length; i++){
+                if(cursorSquare[0] === layer_one[i].x1 && cursorSquare[1] === layer_one[i].y1){
+                    console.log('match');
+                    cleanded_array = layer_one.splice(i, 1)
+                    layer_one = cleaned_array;
+                    context.clearRect(cursorSquare[0], cursorSquare[1], 5, 5);
+                    break;
+                
+                }
+            }
+        }
+        
+    }
+
     context.clearRect(cursorSquare[0], cursorSquare[1], 5, 5);
     cursorSquare = [];
 
@@ -167,12 +201,10 @@ canvas.addEventListener('mouseup', e => {//stop drawing and clear the events and
         y = 0; 
         
     }*/
-    
-    layer_one.push({
-        x1: Math.round((e.clientX - rect.left)/5) *5,
-        y1: Math.round((e.clientY - rect.top)/5)*5
-    })
+    console.log("should not be drawing");
     Drawing = false;
+
+    
 });
 
 function drawLine(context, x1, y1, x2, y2, drawcolor){//strokes and sending them to the events 
