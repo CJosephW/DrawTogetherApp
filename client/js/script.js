@@ -7,11 +7,16 @@ const context = canvas.getContext('2d');
 
 const chatBox = document.getElementById("chat-list");
 let username = ($('#username-input').val());
-let strokesArray = {};
 let cursorSquare = [];
-strokesArray.type = "drawing";
 session_id = '';
 let tool = "pencil";
+
+let layer_one = {
+    events:[],
+    type: "drawing"
+}
+console.log(layer_one.events);
+
 window.onload = init;
 
 function init(){
@@ -26,15 +31,15 @@ function gameLoop(timestamp){
     
 }
 function draw(){
-    for(item of layer_one){            
-        
-        drawSquare(context, item.x1, item.y1, item.color)
 
+    if(layer_one.events.length > 0){
+        for(item of layer_one.events){            
+        drawSquare(context, item.x1, item.y1, item.color)
     }
+    }
+    
     drawSquare(context, cursorSquare[0], cursorSquare[1], cursorSquare[2])
 }
-
-layer_one = [];
 
 var ws = new WebSocket('ws://localhost:40510')
 
@@ -91,7 +96,7 @@ ws.onopen = function(){//on connect tell server to initialize the session with t
     url = window.location.href
     id = url.split('/')[4];
     session_id = id;
-
+    console.log('hello3');
     ws.send(JSON.stringify({
         type: 'initialize_client',
         session_id: id
@@ -100,19 +105,18 @@ ws.onopen = function(){//on connect tell server to initialize the session with t
 
 ws.onmessage = function (msg){
     let messages = JSON.parse(msg.data)
+    console.log(messages);
         
     if(messages.type === "catchup"){//getting previous drawing events
         console.log(msg)
-        for(message of messages.all_draw_events){
-            for(i = 0; i < message.events.length; i++){
-                console.log(message.events[i].x1+ "hello")
-                drawLine(context, message.events[i].x1, message.events[i].y1, message.events[i].x2, message.events[i].y2, message.color);
-                }
-            }
+        if(layer_one.events != undefined) {
+            layer_one.events = messages.layer_one.events
+        }
+            
     } else if(messages.type === "drawing"){//getting new drawings
-        for(message of messages.draw_event.events){
-            console.log(message+ "hello")
-            drawLine(context, message.x1, message.y1, message.x2, message.y2, messages.draw_event.color);
+        if(layer_one.events.length != 0){
+
+            layer_one.events = messages.layer_one.events;
         }
         
     } else if (messages.type === "chat"){//new chats
@@ -135,20 +139,21 @@ canvas.addEventListener('mousedown', e => {//on mouse down start a new events ar
     x = e.clientX - rect.left;
     y = e.clientY - rect.top;
     Drawing = true;*/
-    if(tool === "pencil"){
-        layer_one.push({
+    if(tool ==="pencil"){
+        console.log("fuck this shit");
+        console.log(layer_one.events);
+        layer_one.events.push({
             x1: Math.round((e.clientX - rect.left)/5) *5,
             y1: Math.round((e.clientY - rect.top)/5)*5,
             color: drawcolor
-        })
+        });
     }
     else if(tool === "eraser"){
-        for(i = 0; i < layer_one.length; i++){
+        for(i = 0; i < layer_one.events.length; i++){
             if(Math.round((e.clientX - rect.left)/5)*5 === layer_one[i].x1 && Math.round((e.clientY - rect.top)/5)*5 === layer_one[i].y1){
                 console.log('match1');
-                cleaned_array = layer_one.splice(i, 1);
-                layer_one = cleaned_array;
-                context.clearRect(cursorSquare[0], cursorSquare[1], 5, 5);
+                cleaned_array = layer_one.events.splice(i, 1);
+                layer_one.events = cleaned_array;
             }
         }
     }
@@ -160,11 +165,11 @@ canvas.addEventListener('mousedown', e => {//on mouse down start a new events ar
 
 canvas.addEventListener('mousemove', e => {//get x and y values everytime the client moves
     
-    if(Drawing == true) {
+    if(Drawing === true) {
         
         if(tool === "pencil"){
             
-            layer_one.push({
+            layer_one.events.push({
                 x1: Math.round((e.clientX - rect.left)/5) *5,
                 y1: Math.round((e.clientY - rect.top)/5)*5,
                 color: drawcolor
@@ -173,9 +178,8 @@ canvas.addEventListener('mousemove', e => {//get x and y values everytime the cl
             for(i = 0; i < layer_one.length; i++){
                 if(cursorSquare[0] === layer_one[i].x1 && cursorSquare[1] === layer_one[i].y1){
                     console.log('match');
-                    cleanded_array = layer_one.splice(i, 1)
-                    layer_one = cleaned_array;
-                    context.clearRect(cursorSquare[0], cursorSquare[1], 5, 5);
+                    cleanded_array = layer_one.events.splice(i, 1)
+                    layer_one.events = cleaned_array;
                     break;
                 
                 }
@@ -194,7 +198,6 @@ canvas.addEventListener('mousemove', e => {//get x and y values everytime the cl
 canvas.addEventListener('mouseup', e => {//stop drawing and clear the events and color
     /*if(Drawing === true){
         drawLine(context, x, y, e.clientX - rect.left, e.clientY - rect.top, color);
-        ws.send(JSON.stringify(strokesArray));
         strokesArray.events = [];
         strokesArray.color = ""
         x = 0;
@@ -204,7 +207,13 @@ canvas.addEventListener('mouseup', e => {//stop drawing and clear the events and
     console.log("should not be drawing");
     Drawing = false;
 
-    
+    layer_one.type = "drawing";
+    ws.send(JSON.stringify({
+        layer_one: layer_one,
+        session_id: session_id,
+        type: "drawing"
+    }));
+    console.log(layer_one);
 });
 
 function drawLine(context, x1, y1, x2, y2, drawcolor){//strokes and sending them to the events 

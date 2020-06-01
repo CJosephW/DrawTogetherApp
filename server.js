@@ -30,37 +30,38 @@ var SESSIONS = {}
 wss.on('connection', function(ws){
     CLIENTS.push(ws);
     ws.on('message', function(message, sender){
-        let msg = JSON.parse(message);
-        
+        const msg = JSON.parse(message);
+        console.log(msg);
         if (msg.type == "initialize_client"){
             if (!SESSIONS[msg.session_id]) {//if the session does not already exist prevents overwrite on rejoin/joiners
                 SESSIONS[msg.session_id] = {
                     clients:[],
-                    strokes:[],
+                    layer_one:{ events: []},
                     chat_messages:[]
                 }
             }
             ws.send(JSON.stringify({
                 type: "catchup",//sending all strokes
-                all_draw_events: SESSIONS[msg.session_id].strokes
+                layer_one: SESSIONS[msg.session_id].layer_one
             }));
             ws.send(JSON.stringify({
                 type: "chat_logs",//sending chat logs on connect
                 chat_logs: SESSIONS[msg.session_id].chat_messages
             }))
         }
-        else if (msg.type == "drawing"){//on drawing push to 
-            SESSIONS[msg.session_id].strokes.push({
-                events: msg.events,
-                color: msg.color,
-            });
+        else if (msg.type === "drawing"){//on drawing push to 
+            console.log(msg);
+            console.log(SESSIONS[msg.session_id].layer_one);
+
+            SESSIONS[msg.session_id].layer_one.events = msg.layer_one.events;
+        
             sendAllButSender(JSON.stringify({
                 type: "drawing",
-                draw_event: msg
+                layer_one: msg.layer_one.events
                 
             }), ws);
         }
-        else if(msg.type = 'chat'){
+        else if(msg.type == 'chat'){
             SESSIONS[msg.session_id].chat_messages.push({
                 user: msg.user,
                 chat_message: msg.chat_message
